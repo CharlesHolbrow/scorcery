@@ -1,0 +1,10 @@
+ks-images:
+  build: ./ks-images
+  ports:
+    - "8500:5000"
+  volumes:
+    - ./ks-images/application:/application
+  working_dir:
+    /application
+  command:
+    python app.py
