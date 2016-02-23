@@ -1,9 +1,9 @@
-ks-images:
-  build: ./ks-images
+ks-xml:
+  build: ./ks-xml
   ports:
     - "8500:5000"
   volumes:
-    - ./ks-images/application:/application
+    - ./ks-xml/application:/application
   working_dir:
     /application
   command:
