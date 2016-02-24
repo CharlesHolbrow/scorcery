@@ -1,0 +1,15 @@
+{
+  "name": "ks-images",
+  "version": "0.0.1",
+  "description": "Render and serve kinetic scores",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
+  },
+  "author": "Charles Holbrow",
+  "license": "ISC",
+  "dependencies": {
+    "koa": "^1.1.2"
+  }
+}
