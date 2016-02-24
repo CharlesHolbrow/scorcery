@@ -1,23 +1,25 @@
-ks-xml:
-  container_name: ks-xml
-  build: ./ks-xml
-  ports:
-    - "8500:5000"
-  volumes:
-    - ./ks-xml/application:/application
-  working_dir:
-    /application
-  command:
-    python app.py
+version: "2"
+services:
+  ks-xml:
+    container_name: ks-xml
+    build: ./ks-xml
+    ports:
+      - "8500:5000"
+    volumes:
+      - ./ks-xml/application:/application
+    working_dir:
+      /application
+    command:
+      python app.py
 
-ks-images:
-  container_name: ks-images
-  build: ./ks-images
-  ports:
-    - "3000:3000"
-  volumes:
-    - ./ks-images/application:/application
-  working_dir:
-    /application
-  command:
-    node app.js
+  ks-images:
+    container_name: ks-images
+    build: ./ks-images
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./ks-images/application:/application
+    working_dir:
+      /application
+    command:
+      node app.js
