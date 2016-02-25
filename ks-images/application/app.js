@@ -7,12 +7,12 @@ var fs         = require('mz/fs')
   , request    = require('co-request')
 
 
-var getNote = function* (noteString){
+var getNote = function*(noteString){
   var result = yield request('http://ks-xml:5000/xml/' + noteString)
   var xml = result.body
 
   // write to an xml file
-  var baseFilename = '/tmp/ks-' + Math.floor(Math.random()* 4294967296)
+  var baseFilename = './xml/ks-' + Math.floor(Math.random()* 4294967296)
   var xmlFn = baseFilename + '.xml'
   var pngFn = baseFilename + '.png'
   yield fs.writeFile(xmlFn, xml)
@@ -30,11 +30,16 @@ app.use(function *(){
   this.body = yield readFile('package.json')
 })
 
-co(getNote('E-7')).then(function(res){
-  console.log('GOT RESULT:', res)
-}, function(err){
-  console.log('GOT ERROR: ', err.stack)
-})
+
+var waitForMe = function(){
+  co(getNote, 'a4').then(function(res){
+    console.log('GOT RESULT:', res)
+  }, function(err){
+    console.log('GOT ERROR: ', err.stack)
+  })
+}
+
+setTimeout(waitForMe, 1000)
 
 
-app.listen(3000)
+//app.listen(3000)

@@ -2,6 +2,13 @@ import subprocess
 import music21
 from flask import Flask, Response, send_from_directory
 
+# Configure music 21
+# The default author and title are rendered to xml. Which
+# causes mscore to render the title at the top of the page.
+# Fortunately if the string is empty, no xml is rendered for
+# the author and title fields.
+music21.defaults.author = ''
+music21.defaults.title = ''
 
 
 app = Flask(__name__)
