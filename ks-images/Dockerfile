@@ -17,7 +17,7 @@ RUN sudo add-apt-repository ppa:mscore-ubuntu/mscore-stable && \
 
 COPY ./application /application
 WORKDIR /application
-# RUN npm install
+RUN npm install
 
-EXPOSE 8080
+EXPOSE 3000
 CMD bash
