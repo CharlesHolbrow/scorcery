@@ -1,11 +1,15 @@
 'use strict';
 
 var fs        = require('mz/fs')
+  , path      = require('path')
   , childProc = require('mz/child_process')
   , co        = require('co')
-  , koa       = require('koa')
   , request   = require('co-request')
-  , path      = require('path')
+  , koa       = require('koa.io')
+  , router    = require('koa-router')
+  , koaStatic = require('koa-static')
+
+var connections = require('./src/connections.js')
 
 var getNote = function*(noteString){
   // var noteString = 'g2'
@@ -51,7 +55,9 @@ var noteImage = function*(next){
 
 var app = koa()
 app.use(xResponseTime)
-app.use(noteImage)
-
+app.io.use(connections)
+app.use(koaStatic(path.join(__dirname, 'static'), {defer: true}))
+// app.use(function*(){this.body = 'ok '})
+// app.use(noteImage)
 
 app.listen(3000)
