@@ -8,14 +8,19 @@ var userCount = 0
 module.exports = function*(next){
 
   var id = this.socket.id
+
+  // update global state
   users[id] = this
   userCount += 1
-  console.log('request:', this.socket.request.headers)
+  var requestHeaders = this.socket.request.headers
+
+  // log
   console.log('users connected:', userCount)
   console.log('users:', Object.keys(users))
 
   yield next
 
+  // update global state
   userCount -= 1
-  delete users[userId]
+  delete users[id]
 }
