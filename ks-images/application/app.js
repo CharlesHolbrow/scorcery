@@ -7,7 +7,7 @@ var fs        = require('mz/fs')
   , request   = require('co-request')
   , koa       = require('koa.io')
   , mount     = require('koa-mount')
-  , router    = require('koa-router')
+  , route     = require('koa-route')
   , koaStatic = require('koa-static')
 
 var connections = require('./src/connections.js')
@@ -53,12 +53,21 @@ var noteImage = function*(next){
   this.body = fs.createReadStream(filename)
 }
 
+var sendHtml = function*(){
+  var filename = path.join(__dirname, 'static/index.html')
+  this.type = path.extname(filename)
+  this.body = fs.createReadStream(filename)
+}
 
 var app = koa()
 app.use(xResponseTime)
-app.io.use(connections)
 app.use(koaStatic(path.join(__dirname, 'static'), {defer: true}))
-app.use(mount('/img', koaStatic(path.join(__dirname, 'xml'), {defer: true})))
+app.use(mount('/img', koaStatic(path.join(__dirname, 'xml'))))
+app.use(route.get('/score/:name/', sendHtml))
 // app.use(noteImage)
+
+// socket.io middleware
+app.io.use(connections)
+
 
 app.listen(3000)

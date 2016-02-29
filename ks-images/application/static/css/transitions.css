@@ -12,8 +12,6 @@ h1 { font-size: 3rem; }
 
 div.ks-container img {
   position: absolute;
-  -webkit-transition: opacity 1s ease-in-out;
-  -moz-transition: opacity 1s ease-in-out;
-  -o-transition: opacity 1s ease-in-out;
-  transition: opacity 1s ease-in-out;
+  transition-timing-function: linear;
+  width: 50%;
 }

@@ -3,7 +3,6 @@
 var users = {}
 var userCount = 0
 
-
 // koa.io middleware handles 
 module.exports = function*(next){
 
