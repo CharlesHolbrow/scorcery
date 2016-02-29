@@ -66,8 +66,6 @@ app.use(mount('/img', koaStatic(path.join(__dirname, 'xml'))))
 app.use(route.get('/score/:name/', sendHtml))
 // app.use(noteImage)
 
-// socket.io middleware
-app.io.use(connections)
-
+connections.init(app)
 
 app.listen(3000)
