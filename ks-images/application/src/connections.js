@@ -1,61 +1,80 @@
 'use strict';
 
-var fs    = require('fs')
-  , path  = require('path')
+const path              = require('path')
+  , fs                  = require('mz/fs')
+  , Router              = require('koa-router')
+  , imageGen            = require('./image-gen.js')
+  , xmlStrToPngFilename = imageGen.xmlStrToPngFilename
 
-var users     = {}
-  , userCount = 0
-  , a
-  , rooms = {
-      a: {}
-    , b: {}
-    , c: {}
+const init = function(_app){
+
+  const app     = _app
+    , router    = new Router
+    , users     = {}
+    , rooms     = {a:true, b:true, c:true}
+
+  var userCount = 0
+
+
+  const methods = {
+    addSocketToRoom: function(socket, roomName){
+      if (!roomName) throw new Error('You must specify a roomName')
+      if (!rooms[roomName]) throw new Error('no room exists with name: ' + roomName)
+      socket.join(roomName)
+    },
+    updateRoomWithImg: function(roomName, imagePathname){
+      if (!rooms[roomName]) throw new Error('room does not exist')
+      this.app.io.to(roomName).emit('img', imagePathname)
+    }
   }
 
-// temporary tools for testing image pushing
-var filenames = []
-var randomPngPath = ()=>{
-  var fn = filenames[Math.floor(Math.random() * filenames.length)]
-  return '/img/' + fn
-}
-for (let filename of fs.readdirSync(path.join(__dirname, '../xml'))){
-  if (filename.endsWith('.png')) filenames.push(filename)
-}
+  // socket.io middleware
+  app.io.use(function*(next){
+    var id = this.socket.id
+    var socket = this.socket
 
+    // update global state
+    users[id] = this
+    userCount += 1
 
-module.exports.init = function(koaIoApp){
-  // app.io is the object returned by require('socket.io')()
-  koaIoApp.io.use(socketHandler)
-  setInterval(()=>{
-    koaIoApp.io.to('a').emit('img', randomPngPath())
-  }, 1000)
-}
+    // allow the client to join existing rooms
+    socket.on('join', function(roomName){
+      methods.addSocketToRoom(socket, roomName)
+    })
 
+    console.log('users connected:', userCount)
+    console.log('users:', Object.keys(users))
 
-// koa.io middleware handler
-var socketHandler = function*(next){
+    yield next
 
-  var id = this.socket.id
-  var socket = this.socket
-
-  // update global state
-  users[id] = this
-  userCount += 1
-
-  // allow the client to join existing rooms
-  socket.on('join', function(roomName){
-    if (!rooms[roomName]) return;
-    rooms[roomName][id] = socket
-    socket.join(roomName)
+    // update global state
+    userCount -= 1
+    delete users[id]
   })
 
-  // log
-  console.log('users connected:', userCount)
-  console.log('users:', Object.keys(users))
 
-  yield next
+  // app routes
+  router.get('/score/:id/', function*(){
+    var filename = './static/index.html'
+    this.type = path.extname(filename)
+    this.body = fs.createReadStream(filename)
+  })
 
-  // update global state
-  userCount -= 1
-  delete users[id]
+  router.post('/score/:id/', function*(){
+    if (this.request.get('content-type') !== 'text/xml'){
+      this.status = 400
+      this.body = {error: 'content-type must be text/xml'}
+      return
+    }
+    this.response.status = 200
+    console.log(this.request.body)
+    this.response.body = 'ok'
+    return
+  })
+
+
+  app.use(router.routes())
+  return methods
 }
+
+module.exports = init
