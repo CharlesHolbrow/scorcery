@@ -23,13 +23,15 @@ module.exports.xmlStrToPngFilename = function*(xmlStr, outFilename){
   yield fs.writeFile(mscoreXmlName, xmlStr)
 
   // send to mscore
-  const command = 'xvfb-run mscore '+mscoreXmlName+' -o '+mscorePngName+' -T 0 -r 600'
+  var previfix = (process.platform === 'darwin') ? '/Applications/MuseScore\\ 2.app/Contents/MacOS/mscore ' : 'xvfb-run mscore '
+
+  const command = previfix+mscoreXmlName+' -o '+mscorePngName+' -T 0 -r 600'
   , mscoreResult = yield childProc.exec(command)
-  , fileExists = yield fs.stats.isFile(finalPngName)
+  , fileStats = yield fs.stat(finalPngName)
 
   console.log('mscore command result:', mscoreResult)
 
-  if (!fileExists)
+  if (!fileStats.isFile())
     throw new Error('mscore command failed');
 
   return finalPngName

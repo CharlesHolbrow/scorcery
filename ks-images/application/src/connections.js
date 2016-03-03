@@ -66,6 +66,8 @@ const init = function(_app){
       this.body = {error: 'content-type must be text/xml'}
       return
     }
+
+    yield * xmlStrToPngFilename(this.request.body, 'test.png')
     this.response.status = 200
     this.response.body = 'ok\n'
     return
