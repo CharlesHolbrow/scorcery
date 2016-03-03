@@ -67,8 +67,7 @@ const init = function(_app){
       return
     }
     this.response.status = 200
-    console.log(this.request.body)
-    this.response.body = 'ok'
+    this.response.body = 'ok\n'
     return
   })
 
