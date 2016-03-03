@@ -1,16 +1,15 @@
-version: "2"
+version: '2'
 services:
   ks-xml:
     container_name: ks-xml
     build: ./ks-xml
     ports:
       - "8500:5000"
+      - "8889:8888"
     volumes:
       - ./ks-xml/application:/application
     working_dir:
       /application
-    command:
-      python app.py
 
   ks-images:
     container_name: ks-images

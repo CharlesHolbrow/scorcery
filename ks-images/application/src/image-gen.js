@@ -5,7 +5,7 @@ const path    = require('path')
 
 
 const hashFileContents = function(str){
-  const hashed =  '' + hash(str)
+  var hashed =  '' + hash(str)
   while (hashed.length < 10) hashed = '0' + hashed
   return hashed
 }
@@ -21,8 +21,9 @@ module.exports.xmlStrToPng = function*(xmlStr){
   const mscoreXmlName = path.join('./xml/', baseXmlName)
   , desiredPngName    = path.join('./score-img/', basePngName)
   , mscoreOutPngName  = path.join('./score-img/', baseMscoreOutPngName)
-  // check if we already have the desired file
 
+  // check if we already have the desired file
+  console.log('checking if file exists:', desiredPngName)
   var fileExists = yield fs.exists(desiredPngName)
   if (fileExists){
     console.log('used cache for: '+desiredPngName)
@@ -30,6 +31,7 @@ module.exports.xmlStrToPng = function*(xmlStr){
   }
 
   // write the xml file that we will pass to mscore
+  console.log('writing:', mscoreXmlName)
   yield fs.writeFile(mscoreXmlName, xmlStr)
 
   // send to mscore

@@ -77,7 +77,10 @@ const init = function(_app){
       return
     }
 
-    const filename = yield * xmlStrToPng(this.request.body)
+    console.log('Attempting to create .png...')
+    const filename = yield* xmlStrToPng(this.request.body)
+    console.log('...Created .png!')
+
     methods.updateRoomWithImg(this.params.id, '/'+filename)
     this.response.status = 200
     return

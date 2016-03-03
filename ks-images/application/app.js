@@ -34,3 +34,4 @@ app.use(mount('/score-img', koaStatic(path.join(__dirname, 'score-img'))))
 connections(app)
 
 app.listen(3000)
+console.log('listening on 3000')

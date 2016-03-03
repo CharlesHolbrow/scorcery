@@ -12,12 +12,12 @@ RUN conda install \
   jupyter \
   numpy \
   matplotlib \
+  pip \
   scipy
 
 # pip install
 RUN pip install \
-  music21 \
-  flask
+  music21
 
 
 # Add Tini. Tini operates as a process subreaper for jupyter. This prevents
