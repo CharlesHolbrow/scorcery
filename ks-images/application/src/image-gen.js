@@ -1,38 +1,48 @@
-const path  = require('path')
-  , fs      = require('mz/fs')
+const path    = require('path')
+  , fs        = require('mz/fs')
   , childProc = require('mz/child_process')
+  , hash      = require('string-hash')
 
 
-module.exports.xmlStrToPngFilename = function*(xmlStr, outFilename){
-  if (typeof outFilename !== 'string')
-    throw new Error('outFilename not provided')
-  if (path.extname(outFilename).toLowerCase() !== '.png')
-    outFilename += '.png'
+const hashFileContents = function(str){
+  const hashed =  '' + hash(str)
+  while (hashed.length < 10) hashed = '0' + hashed
+  return hashed
+}
 
-  const basePngName   = path.basename(outFilename)
-  , baseName          = outFilename.slice(0, '-4') 
-  , baseXmlName       = baseName + '.xml'
-  , baseFinalPngName  = baseName + '-1.png'
+module.exports.xmlStrToPng = function*(xmlStr){
 
-  // temporary xml file to send to mscore
+  const baseName          = hashFileContents(xmlStr)
+  , basePngName           = baseName + '.png'
+  , baseXmlName           = baseName + '.xml'
+  , baseMscoreOutPngName  = baseName + '-1.png'
+
+  // temporary xml filename to send to mscore
   const mscoreXmlName = path.join('./xml/', baseXmlName)
-  , mscorePngName     = path.join('./score-img/', basePngName)
-  , finalPngName      = path.join('./score-img/', baseFinalPngName)
+  , desiredPngName    = path.join('./score-img/', basePngName)
+  , mscoreOutPngName  = path.join('./score-img/', baseMscoreOutPngName)
+  // check if we already have the desired file
+
+  var fileExists = yield fs.exists(desiredPngName)
+  if (fileExists){
+    console.log('used cache for: '+desiredPngName)
+    return desiredPngName
+  }
 
   // write the xml file that we will pass to mscore
   yield fs.writeFile(mscoreXmlName, xmlStr)
 
   // send to mscore
-  var previfix = (process.platform === 'darwin') ? '/Applications/MuseScore\\ 2.app/Contents/MacOS/mscore ' : 'xvfb-run mscore '
+  var prefix = (process.platform === 'darwin') ? '/Applications/MuseScore\\ 2.app/Contents/MacOS/mscore ' : 'xvfb-run mscore '
 
-  const command = previfix+mscoreXmlName+' -o '+mscorePngName+' -T 0 -r 600'
+  const command = prefix+mscoreXmlName+' -o '+desiredPngName+' -T 0 -r 600 && mv ' + mscoreOutPngName + ' ' + desiredPngName
   , mscoreResult = yield childProc.exec(command)
-  , fileStats = yield fs.stat(finalPngName)
-
   console.log('mscore command result:', mscoreResult)
 
-  if (!fileStats.isFile())
+  // check if the file exists
+  fileExists = yield fs.exists(desiredPngName)
+  if (!fileExists)
     throw new Error('mscore command failed');
 
-  return finalPngName
+  return desiredPngName
 }

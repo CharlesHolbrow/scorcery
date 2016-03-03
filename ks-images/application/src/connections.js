@@ -1,10 +1,10 @@
 'use strict';
 
-const path              = require('path')
-  , fs                  = require('mz/fs')
-  , Router              = require('koa-router')
-  , imageGen            = require('./image-gen.js')
-  , xmlStrToPngFilename = imageGen.xmlStrToPngFilename
+const path      = require('path')
+  , fs          = require('mz/fs')
+  , Router      = require('koa-router')
+  , imageGen    = require('./image-gen.js')
+  , xmlStrToPng = imageGen.xmlStrToPng
 
 const init = function(_app){
 
@@ -24,7 +24,7 @@ const init = function(_app){
     },
     updateRoomWithImg: function(roomName, imagePathname){
       if (!rooms[roomName]) throw new Error('room does not exist')
-      this.app.io.to(roomName).emit('img', imagePathname)
+      app.io.to(roomName).emit('img', imagePathname)
     }
   }
 
@@ -66,13 +66,21 @@ const init = function(_app){
       this.body = {error: 'content-type must be text/xml'}
       return
     }
+    if (!rooms.hasOwnProperty(this.params.id)){
+      this.status = 400
+      this.body = {error: 'that score does not exist'}
+      return
+    }
+    if (!this.request.body || this.request.body === ''){
+      this.status = 400
+      this.body =  {error: 'no xml in body'}
+    }
 
-    yield * xmlStrToPngFilename(this.request.body, 'test.png')
+    const filename = yield * xmlStrToPng(this.request.body)
+    methods.updateRoomWithImg(this.params.id, '/'+filename)
     this.response.status = 200
-    this.response.body = 'ok\n'
     return
   })
-
 
   app.use(router.routes())
   return methods

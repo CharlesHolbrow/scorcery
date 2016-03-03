@@ -1,11 +1,7 @@
 'use strict';
 
-var fs          = require('mz/fs')
-  , path        = require('path')
-  , childProc   = require('mz/child_process')
-  , co          = require('co')
-  , request     = require('co-request')
-  , koa         = require('koa.io')
+const path      = require('path')
+  , koaIO       = require('koa.io')
   , mount       = require('koa-mount')
   , koaStatic   = require('koa-static')
   , parse       = require('co-body')
@@ -26,13 +22,13 @@ var bodyParser = function*(next){
   yield next
 }
 
-var app = koa()
+var app = koaIO()
 
 // koa middleware
 app.use(xResponseTime)
 app.use(koaStatic(path.join(__dirname, 'static'), {defer: true}))
 app.use(bodyParser)
-app.use(mount('/img', koaStatic(path.join(__dirname, 'xml'))))
+app.use(mount('/score-img', koaStatic(path.join(__dirname, 'score-img'))))
 
 // koa io socket implementation
 connections(app)
