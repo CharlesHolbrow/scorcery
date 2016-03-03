@@ -25,7 +25,7 @@ KS.Image.prototype = {
   },
   opacity: function(amt, duration){
     duration = Math.floor(duration || 0)
-    this.el.style.transition = 'opacity '+ duration+'ms ease-in-out'
+    this.el.style.transition = 'opacity '+ duration+'ms'
     this.el.style.opacity = amt
   }
 }

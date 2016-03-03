@@ -74,6 +74,7 @@ const init = function(_app){
     if (!this.request.body || this.request.body === ''){
       this.status = 400
       this.body =  {error: 'no xml in body'}
+      return
     }
 
     const filename = yield * xmlStrToPng(this.request.body)
