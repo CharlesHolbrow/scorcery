@@ -5,13 +5,14 @@ body {
 
 h1 { font-size: 3rem; }
 
-.ks-container {
-  height: 298px;
+#ks-container {
+  height: 400px;
   position: relative;
+  border: 1px solid blue;
 }
 
-div.ks-container img {
+#ks-container div {
   position: absolute;
   transition-timing-function: linear;
-  width: 50%;
+  border: 1px solid red;
 }

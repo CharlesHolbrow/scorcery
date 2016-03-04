@@ -21,10 +21,10 @@ sock.on('connect', function(){
 
 // Let the server tell us when to push a new image
 sock.on('img', function(url){
-  imageStack && imageStack.push(url)
+  scoreStack && scoreStack.push(url)
 })
 
 window.onload = function(){
-  window.imageStack = new KS.ImageStack(5)
+  window.scoreStack = new KS.Stack(5)
   // imageStack.push(url) to fade in a new image
 }

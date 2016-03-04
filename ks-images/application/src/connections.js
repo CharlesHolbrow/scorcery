@@ -4,7 +4,7 @@ const path      = require('path')
   , fs          = require('mz/fs')
   , Router      = require('koa-router')
   , imageGen    = require('./image-gen.js')
-  , xmlStrToPng = imageGen.xmlStrToPng
+  , xmlStrToSvg = imageGen.xmlStrToSvg
 
 const init = function(_app){
 
@@ -77,11 +77,13 @@ const init = function(_app){
       return
     }
 
-    console.log('Attempting to create .png...')
-    const filename = yield* xmlStrToPng(this.request.body)
-    console.log('...Created .png!')
+    console.log('Attempting to create .svg...')
+    const filename = yield* xmlStrToSvg(this.request.body)
+    console.log('...Created .svg!')
 
-    methods.updateRoomWithImg(this.params.id, '/'+filename)
+    const path = '/' + filename
+    methods.updateRoomWithImg(this.params.id, path)
+    this.response.body = {path: path}
     this.response.status = 200
     return
   })

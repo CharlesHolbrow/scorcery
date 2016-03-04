@@ -10,24 +10,20 @@ const hashFileContents = function(str){
   return hashed
 }
 
-module.exports.xmlStrToPng = function*(xmlStr){
+module.exports.xmlStrToSvg = function*(xmlStr){
 
-  const baseName          = hashFileContents(xmlStr)
-  , basePngName           = baseName + '.png'
-  , baseXmlName           = baseName + '.xml'
-  , baseMscoreOutPngName  = baseName + '-1.png'
-
-  // temporary xml filename to send to mscore
-  const mscoreXmlName = path.join('./xml/', baseXmlName)
-  , desiredPngName    = path.join('./score-img/', basePngName)
-  , mscoreOutPngName  = path.join('./score-img/', baseMscoreOutPngName)
+  const baseName    = hashFileContents(xmlStr)
+  , baseXmlName     = baseName + '.xml'
+  , mscoreXmlName   = path.join('./xml/', baseXmlName)
+  , baseSvgName     = baseName + '.svg'
+  , desiredSvgName  = path.join('./score-img/', baseSvgName)
 
   // check if we already have the desired file
-  console.log('checking if file exists:', desiredPngName)
-  var fileExists = yield fs.exists(desiredPngName)
+  console.log('checking if file exists:', desiredSvgName)
+  var fileExists = yield fs.exists(desiredSvgName)
   if (fileExists){
-    console.log('used cache for: '+desiredPngName)
-    return desiredPngName
+    console.log('used cache for: '+desiredSvgName)
+    return desiredSvgName
   }
 
   // write the xml file that we will pass to mscore
@@ -37,14 +33,14 @@ module.exports.xmlStrToPng = function*(xmlStr){
   // send to mscore
   var prefix = (process.platform === 'darwin') ? '/Applications/MuseScore\\ 2.app/Contents/MacOS/mscore ' : 'xvfb-run mscore '
 
-  const command = prefix+mscoreXmlName+' -o '+desiredPngName+' -T 0 -r 600 && mv ' + mscoreOutPngName + ' ' + desiredPngName
+  const command = prefix+mscoreXmlName+' -o '+desiredSvgName+' -T 0'
   , mscoreResult = yield childProc.exec(command)
   console.log('mscore command result:', mscoreResult)
 
   // check if the file exists
-  fileExists = yield fs.exists(desiredPngName)
+  fileExists = yield fs.exists(desiredSvgName)
   if (!fileExists)
     throw new Error('mscore command failed');
 
-  return desiredPngName
+  return desiredSvgName
 }
