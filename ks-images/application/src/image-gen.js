@@ -33,7 +33,7 @@ module.exports.xmlStrToSvg = function*(xmlStr){
   // send to mscore
   var prefix = (process.platform === 'darwin') ? '/Applications/MuseScore\\ 2.app/Contents/MacOS/mscore ' : 'xvfb-run mscore '
 
-  const command = prefix+mscoreXmlName+' -o '+desiredSvgName+' -T 0'
+  const command = prefix+mscoreXmlName+' -o '+desiredSvgName+' -T 40'
   , mscoreResult = yield childProc.exec(command)
   console.log('mscore command result:', mscoreResult)
 

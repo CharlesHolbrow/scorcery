@@ -58,38 +58,39 @@ KS.Score.prototype = {
     var firstGroup = qwery('g', this.svg)[0]
     if (!firstGroup) throw new Error('could not find an svg group')
 
+    var userCoordsHeightChange = userCoordsOffset * -1;
+    userCoordsHeightChange += 120
+
     // create the transform we will be useing 
-    var matrix      = this.svg.createSVGMatrix().translate(0, 70)
+    var matrix      = this.svg.createSVGMatrix().translate(0, userCoordsHeightChange)
       , transform   = this.svg.createSVGTransformFromMatrix(matrix)
 
     firstGroup.transform.baseVal.appendItem(transform)
 
+    var svgWidth        = this.svg.getAttribute('width')
+      , svgWidthUnits   = svgWidth.slice(-2)
+      , svgHeight       = this.svg.getAttribute('height')
+      , svgHeightUnits  = svgHeight.slice(-2)
+      // viewBox specifies user coords
+      , svgViewBox      = this.svg.getAttribute('viewBox').split(' ')
 
-    // var svgWidth        = this.svg.getAttribute('width')
-    //   , svgWidthUnits   = svgWidth.slice(-2)
-    //   , svgHeight       = this.svg.getAttribute('height')
-    //   , svgHeightUnits  = svgHeight.slice(-2)
-    //   // viewBox specifies user coords
-    //   , svgViewBox      = this.svg.getAttribute('viewBox').split(' ')
+    if (svgHeightUnits !== 'mm' || svgWidthUnits !== 'mm'){
+      throw new Error('Assertion Failed: svg dimensions expected to be mm', svgWidth, svgHeight)
+    }
 
-    // if (svgHeightUnits !== 'mm' || svgWidthUnits !== 'mm'){
-    //   throw new Error('Assertion Failed: svg dimensions expected to be mm', svgWidth, svgHeight)
-    // }
+    // The size of the image in mm
+    svgWidth  = parseFloat(svgWidth.slice(0, -2))
+    svgHeight = parseFloat(svgHeight.slice(0, -2))
 
-    // // The size of the image in mm
-    // svgWidth  = parseFloat(svgWidth.slice(0, -2))
-    // svgHeight = parseFloat(svgHeight.slice(0, -2))
+    // width of the image in user coordinates
+    var userWidth   = parseFloat(svgViewBox[2]) - parseFloat(svgViewBox[0])
+      , userHeight  = parseFloat(svgViewBox[3]) - parseFloat(svgViewBox[1])
 
-    // // width of the image in user coordinates
-    // var userWidth   = parseFloat(svgViewBox[2]) - parseFloat(svgViewBox[0])
-    //   , userHeight  = parseFloat(svgViewBox[3]) - parseFloat(svgViewBox[1])
-
-    // var heightScaleFactor = svgWidth / userHeight
-
+    var heightScaleFactor = svgHeight / userHeight
 
     // console.log('svgViewBox', svgViewBox, svgWidth, svgHeight)
 
-    return userCoordsOffset
+    return userCoordsOffset * heightScaleFactor
   }
 }
 
@@ -129,8 +130,8 @@ KS.Stack.prototype = {
 
       // offset in pixels 
       var staffOffset = newScore.getStaffOffset() //
-
-      // newScore.div.style.top = (-1 * staffOffset) + 'px'
+      // console.log('translate up mm', staffOffset)
+      // newScore.div.style.top = (-1 * staffOffset) + 'mm'
     })
   }
 }

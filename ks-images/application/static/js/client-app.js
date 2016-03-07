@@ -26,5 +26,4 @@ sock.on('img', function(url){
 
 window.onload = function(){
   window.scoreStack = new KS.Stack(5)
-  // imageStack.push(url) to fade in a new image
 }
