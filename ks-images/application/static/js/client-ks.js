@@ -11,6 +11,7 @@ KS.Score = function(){
 }
 
 KS.Score.prototype = {
+
   src:function(target, cb){
     var self = this;
     if (typeof target !== 'string'){
@@ -31,12 +32,14 @@ KS.Score.prototype = {
       })
     }
   },
+
   opacity: function(amt, duration){
     duration = Math.floor(duration || 0)
     this.div.style.transition = 'opacity '+ duration+'ms'
     this.div.style.opacity = amt
   },
-  getStaffOffset: function(){
+
+  normalizeStaffPositionOnYAxis: function(){
     var svgGroups = qwery('g[stroke-linecap="butt"][transform]', this.div)
     var userCoordsOffset =  _.chain(svgGroups).filter(function(group){
       // Get only groups with exactly five elements. We hope
@@ -66,31 +69,6 @@ KS.Score.prototype = {
       , transform   = this.svg.createSVGTransformFromMatrix(matrix)
 
     firstGroup.transform.baseVal.appendItem(transform)
-
-    var svgWidth        = this.svg.getAttribute('width')
-      , svgWidthUnits   = svgWidth.slice(-2)
-      , svgHeight       = this.svg.getAttribute('height')
-      , svgHeightUnits  = svgHeight.slice(-2)
-      // viewBox specifies user coords
-      , svgViewBox      = this.svg.getAttribute('viewBox').split(' ')
-
-    if (svgHeightUnits !== 'mm' || svgWidthUnits !== 'mm'){
-      throw new Error('Assertion Failed: svg dimensions expected to be mm', svgWidth, svgHeight)
-    }
-
-    // The size of the image in mm
-    svgWidth  = parseFloat(svgWidth.slice(0, -2))
-    svgHeight = parseFloat(svgHeight.slice(0, -2))
-
-    // width of the image in user coordinates
-    var userWidth   = parseFloat(svgViewBox[2]) - parseFloat(svgViewBox[0])
-      , userHeight  = parseFloat(svgViewBox[3]) - parseFloat(svgViewBox[1])
-
-    var heightScaleFactor = svgHeight / userHeight
-
-    // console.log('svgViewBox', svgViewBox, svgWidth, svgHeight)
-
-    return userCoordsOffset * heightScaleFactor
   }
 }
 
@@ -123,15 +101,11 @@ KS.Stack.prototype = {
         console.error('failed to get new score:', err)
         return
       }
-      // fade out the old image
+      // Align the new staff with the old staff.
+      var staffOffset = newScore.normalizeStaffPositionOnYAxis()
+      // Crossfade images
       if (oldScore) {oldScore.opacity(0, 450)}
-      // fade in the new image
       newScore.opacity(1, 300)
-
-      // offset in pixels 
-      var staffOffset = newScore.getStaffOffset() //
-      // console.log('translate up mm', staffOffset)
-      // newScore.div.style.top = (-1 * staffOffset) + 'mm'
     })
   }
 }
