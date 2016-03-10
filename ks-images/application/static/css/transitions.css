@@ -8,11 +8,12 @@ h1 { font-size: 3rem; }
 #ks-container {
   height: 400px;
   position: relative;
-  border: 1px solid blue;
+  /*border: 1px solid blue;*/
 }
 
 #ks-container div {
   position: absolute;
   transition-timing-function: linear;
-  border: 1px solid red;
+  zoom: 2;
+  /*border: 1px solid red;*/
 }
