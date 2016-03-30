@@ -14,6 +14,6 @@ h1 { font-size: 3rem; }
 #ks-container div {
   position: absolute;
   transition-timing-function: linear;
-  zoom: 2;
+  zoom: 1;
   /*border: 1px solid red;*/
 }
