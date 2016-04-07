@@ -1,4 +1,8 @@
 {
   "esversion":6,
-  "-W058": true
+  "-W058": true,
+  "asi": true,
+  "node": true,
+  "laxcomma": true,
+  "expr": true
 }
