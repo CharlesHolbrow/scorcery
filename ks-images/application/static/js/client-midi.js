@@ -3,7 +3,9 @@ window.ksMidi = {
   msgs: {
     continue: new Uint8Array([0b11111011]),
     start:    new Uint8Array([0b11111010]),
-    noteOn:   new Uint8Array([0b10010000, 0, 0])
+    stop:     new Uint8Array([0b11111100]),
+    noteOn:   new Uint8Array([0b10010000, 0, 0]),
+    cc:       new Uint8Array([0b10110000, 0, 0]),
   }
 };
 
@@ -21,6 +23,25 @@ ksMidi.init = function(){
     sysex: false
   }).then(ksMidi.midiInitSuccess, ksMidi.midiInitFail);
 };
+
+ksMidi.cc = function(cc, val, ch){
+  if (!ksMidi.output){
+    console.warn('Cannot CC: output not available');
+    return;
+  }
+
+  if (typeof cc  !== 'number' || cc < 0 || cc > 127){
+    throw new Error('Bad cc number agrument');
+  }
+  cc = Math.floor(cc);
+
+  val = (typeof val === 'number') ? Math.floor(val) % 128 : 127;
+  ch  = (typeof ch  === 'number') ? Math.floor(ch)  % 16  : 0;
+
+  var msg = [ksMidi.msgs.cc[0] + ch, cc, val];
+  ksMidi.output.send(msg);
+};
+
 
 ksMidi.continue = function(){
   if (!ksMidi.output){
@@ -47,11 +68,7 @@ ksMidi.noteOn = function(note, vel, ch){
   vel = (typeof vel === 'number') ? vel : 127;
   ch  = (typeof ch  === 'number') ? ch  : 0;
 
-  var msg = ksMidi.msgs.noteOn;
-  msg[0] += ch;
-  msg[1]  = note;
-  msg[2]  = vel;
-  console.log(msg);
+  var msg = [ksMidi.msgs.noteOn[0] + ch, note, vel];
   ksMidi.output.send(msg);
 };
 
@@ -88,4 +105,8 @@ ksMidi.midiInitSuccess = function(midi){
 
 };
 
+ksMidi.ksPlay   = function(){ksMidi.cc(110, 0, 15);};
+ksMidi.ksStop   = function(){ksMidi.cc(111, 0, 15);};
+ksMidi.ksPause  = function(){ksMidi.cc(112, 0, 15);};
+ksMidi.ksReload = function(){ksMidi.cc(113, 0, 15);};
 ksMidi.init();

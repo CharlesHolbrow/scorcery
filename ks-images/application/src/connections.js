@@ -15,7 +15,6 @@ const init = function(_app){
 
   var userCount = 0
 
-
   const methods = {
     addSocketToRoom: function(socket, roomName){
       if (!roomName) throw new Error('You must specify a roomName')
@@ -25,6 +24,10 @@ const init = function(_app){
     updateRoomWithImg: function(roomName, imagePathname){
       if (!rooms[roomName]) throw new Error('room does not exist')
       app.io.to(roomName).emit('img', imagePathname)
+    },
+    updateRoomWithKsCommand: function(roomName, ksCommandName){
+      if (!rooms[roomName]) throw new Error('room does not exist')
+      app.io.to(roomName).emit('transport', ksCommandName)
     }
   }
 
@@ -54,7 +57,7 @@ const init = function(_app){
 
 
   // app routes
-  router.get('/score/:id/', function*(){
+  router.get('/score/:id/', function(){
     var filename = './static/index.html'
     this.type = path.extname(filename)
     this.body = fs.createReadStream(filename)
@@ -85,6 +88,14 @@ const init = function(_app){
     methods.updateRoomWithImg(this.params.id, path)
     this.response.body = {path: path}
     this.response.status = 200
+    return
+  })
+
+  router.post('/transport/:id/:command', function(){
+    console.log('transport command:', this.params)
+    methods.updateRoomWithKsCommand(this.params.id, this.params.command)
+    this.status = 200
+    this.body = {}
     return
   })
 

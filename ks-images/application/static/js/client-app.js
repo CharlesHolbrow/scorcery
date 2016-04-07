@@ -24,6 +24,18 @@ sock.on('img', function(url){
   if (scoreStack) scoreStack.push(url);
 });
 
+sock.on('transport', function(commandName){
+  var firstLetter = commandName[0];
+  var rest        = commandName.slice(1)
+  var methodName  = 'ks' + firstLetter.toUpperCase() + rest
+  if (!ksMidi[methodName]){
+    console.error('Method does not exist: '+methodName);
+    return;
+  }
+  console.log('Transport: '+methodName)
+  ksMidi[methodName]();
+})
+
 window.onload = function(){
   window.scoreStack = new KS.Stack(5);
 };
