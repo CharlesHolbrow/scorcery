@@ -3,6 +3,7 @@ import requests
 import itertools
 import math
 import xml.etree.ElementTree as ET
+import json
 
 from music21 import *
 
@@ -76,13 +77,14 @@ def request_svg_creation(obj, filename):
                         headers=headers,
                         timeout=5)
 
-def send_transport_command(scoreName, commandName):
+def send_transport_command(scoreName, commandName, options={}):
     path = scoreName + '/' + commandName
     url = urllib.parse.urljoin('http://ks-images:3000/transport/', path)
+    json_string = json.dumps(options)
     return requests.post(url,
-                         headers={'Content-Type': 'text/plain'},
+                         headers={'Content-Type': 'application/json'},
                          timeout=5,
-                         data='')
+                         data=json_string)
 
 def write_midi_file(a_stream, filename='default.mid'):
     # streanToMidiFile is buggy for non-flat streams

@@ -25,9 +25,9 @@ const init = function(_app){
       if (!rooms[roomName]) throw new Error('room does not exist')
       app.io.to(roomName).emit('img', imagePathname)
     },
-    updateRoomWithKsCommand: function(roomName, ksCommandName){
+    updateRoomWithKsCommand: function(roomName, ksCommandName, options){
       if (!rooms[roomName]) throw new Error('room does not exist')
-      app.io.to(roomName).emit('transport', ksCommandName)
+      app.io.to(roomName).emit('transport', ksCommandName, options || {})
     }
   }
 
@@ -105,7 +105,7 @@ const init = function(_app){
       return
     }
 
-    var legalPattern = /^[\w0-9]+$/
+    var legalPattern = /^[\w0-9-]+$/
     if (!legalPattern.test(this.params.name)){
       this.status = 400
       this.body = {error: 'ilegal filename'}
@@ -124,7 +124,7 @@ const init = function(_app){
 
   router.post('/transport/:id/:command', function(){
     console.log('transport command:', this.params)
-    methods.updateRoomWithKsCommand(this.params.id, this.params.command)
+    methods.updateRoomWithKsCommand(this.params.id, this.params.command, this.request.body)
     this.status = 200
     this.body = {}
     return

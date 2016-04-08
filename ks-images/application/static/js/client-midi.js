@@ -132,6 +132,12 @@ ksMidi.ksPlay   = function(){ksMidi.cc(110, 0, 15);};
 ksMidi.ksStop   = function(){ksMidi.cc(111, 0, 15);};
 ksMidi.ksPause  = function(){ksMidi.cc(112, 0, 15);};
 ksMidi.ksReload = function(){ksMidi.cc(113, 0, 15);};
+ksMidi.ksOffset = function(options){
+  ksMidi._zeroOffset = options.value || 0;
+}
+ksMidi.ksImagePrefix = function(options){
+  ksMidi._imagePrefix = options.value || '';
+}
 
 
 // these are used for the clock:

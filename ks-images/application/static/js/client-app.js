@@ -24,7 +24,7 @@ sock.on('img', function(url){
   if (scoreStack) scoreStack.push(url);
 });
 
-sock.on('transport', function(commandName){
+sock.on('transport', function(commandName, options){
   var firstLetter = commandName[0];
   var rest        = commandName.slice(1)
   var methodName  = 'ks' + firstLetter.toUpperCase() + rest
@@ -33,7 +33,7 @@ sock.on('transport', function(commandName){
     return;
   }
   console.log('Transport: '+methodName)
-  ksMidi[methodName]();
+  ksMidi[methodName](options);
 })
 
 window.onload = function(){
@@ -43,7 +43,12 @@ window.onload = function(){
   // (TODO: TODO fix sloppy bug)
   ksMidi._on16th = function(beat){
     if (beat % 14 !== 0) return;
-    var loop_point = beat / 14;
+    var loopPoint  = beat / 14;
+    var imageIndex = loopPoint + (ksMidi._zeroOffset || 0);
+    var imagePrefix = ksMidi._imagePrefix || '';
+    var imageName = imagePrefix + imageIndex + '.svg';
+    var fullImageName = '/score-img/' + imageName;
+    scoreStack.push(fullImageName);
   }
 
 };
