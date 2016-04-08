@@ -28,7 +28,7 @@ var app = koaIO()
 app.use(xResponseTime)
 app.use(koaStatic(path.join(__dirname, 'static'), {defer: true}))
 app.use(bodyParser)
-app.use(mount('/score-img', koaStatic(path.join(__dirname, 'score-img'))))
+app.use(mount('/score-img', koaStatic(path.join(__dirname, 'score-img'), {defer:true})))
 
 // koa io socket implementation
 connections(app)

@@ -44,7 +44,6 @@ window.onload = function(){
   ksMidi._on16th = function(beat){
     if (beat % 14 !== 0) return;
     var loop_point = beat / 14;
-
   }
 
 };

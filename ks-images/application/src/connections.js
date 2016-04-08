@@ -91,6 +91,37 @@ const init = function(_app){
     return
   })
 
+  // Create the image with the given filename, but do not push to the client;
+  // this is a little sloppy, because the file will actually appear in score
+  router.post('/create-svg/:name', function*(){
+    if (this.request.get('content-type') !== 'text/xml'){
+      this.status = 400
+      this.body = {error: 'content-type must be text/xml'}
+      return
+    }
+    if (!this.request.body || this.request.body === ''){
+      this.status = 400
+      this.body =  {error: 'no xml in body'}
+      return
+    }
+
+    var legalPattern = /^[\w0-9]+$/
+    if (!legalPattern.test(this.params.name)){
+      this.status = 400
+      this.body = {error: 'ilegal filename'}
+      return
+    }
+    var name = this.params.name
+
+    console.log('attempting to create:', name)
+    const filename = yield* xmlStrToSvg(this.request.body, name)
+    console.log(`${filename} created!!`)
+
+    this.response.body = {path: '/' + filename}
+    this.response.status = 200
+    return
+  })
+
   router.post('/transport/:id/:command', function(){
     console.log('transport command:', this.params)
     methods.updateRoomWithKsCommand(this.params.id, this.params.command)

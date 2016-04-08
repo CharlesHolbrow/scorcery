@@ -10,22 +10,24 @@ const hashFileContents = function(str){
   return hashed
 }
 
-module.exports.xmlStrToSvg = function*(xmlStr){
+module.exports.xmlStrToSvg = function*(xmlStr, simpleName){
 
-  const baseName    = hashFileContents(xmlStr)
+  const baseName    = (simpleName)? simpleName : hashFileContents(xmlStr)
   , baseXmlName     = baseName + '.xml'
   , mscoreXmlName   = path.join('./xml/', baseXmlName)
   , baseSvgName     = baseName + '.svg'
   , desiredSvgName  = path.join('./score-img/', baseSvgName)
 
   // check if we already have the desired file
-  console.log('checking if file exists:', desiredSvgName)
-  var fileExists = yield fs.exists(desiredSvgName)
-  if (fileExists){
-    console.log('used cache for: '+desiredSvgName)
-    return desiredSvgName
+  if (!simpleName){
+    console.log('checking if file exists:', desiredSvgName)
+    var fileExists = yield fs.exists(desiredSvgName)
+    if (fileExists){
+      console.log('used cache for: '+desiredSvgName)
+      return desiredSvgName
+    }
   }
-
+  
   // write the xml file that we will pass to mscore
   console.log('writing:', mscoreXmlName)
   yield fs.writeFile(mscoreXmlName, xmlStr)

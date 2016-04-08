@@ -66,6 +66,16 @@ def send_m21_object(scoreName, obj):
                         headers=headers,
                         timeout=5)
 
+# create, but do not push to clients
+def request_svg_creation(obj, filename):
+    xml = musicxml.m21ToString.fromMusic21Object(obj)
+    headers = {'Content-Type': 'text/xml'}
+    url = urllib.parse.urljoin('http://ks-images:3000', 'create-svg/' + filename)
+    return requests.post(url,
+                        data=xml,
+                        headers=headers,
+                        timeout=5)
+
 def send_transport_command(scoreName, commandName):
     path = scoreName + '/' + commandName
     url = urllib.parse.urljoin('http://ks-images:3000/transport/', path)
