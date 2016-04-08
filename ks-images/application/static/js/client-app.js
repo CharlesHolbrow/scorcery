@@ -38,4 +38,13 @@ sock.on('transport', function(commandName){
 
 window.onload = function(){
   window.scoreStack = new KS.Stack(5);
+
+  // This should depend on the song. Hard coding the song cycle is a bug, and could be hard to fix later on.
+  // (TODO: TODO fix sloppy bug)
+  ksMidi._on16th = function(beat){
+    if (beat % 14 !== 0) return;
+    var loop_point = beat / 14;
+
+  }
+
 };
