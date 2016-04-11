@@ -79,6 +79,7 @@ KS.Score.prototype = {
 //
 KS.Stack = function(size){
   var parent = document.getElementById('ks-container');
+  this.element = parent
   this.size = size || 4;
   this.currentIndex = -1;
   this.scores = [];
@@ -91,6 +92,7 @@ KS.Stack = function(size){
 
 KS.Stack.prototype = {
   push: function(target){
+    var self = this;
     var oldScore = this.scores[this.currentIndex];
     this.currentIndex = (this.currentIndex + 1) % this.size;
     var newScore = this.scores[this.currentIndex];
@@ -105,7 +107,54 @@ KS.Stack.prototype = {
       var staffOffset = newScore.normalizeStaffPositionOnYAxis();
       // Crossfade images
       if (oldScore) {oldScore.opacity(0, 450);}
+
+      var containerWidth      = self.element.offsetWidth;   // should default to width window
+      var containerHeight     = self.element.offsetHeight;  // should default to 0px
+      var windowHeight        = window.innerHeight;
+      var svgRect             = newScore.svg.getBoundingClientRect();
+      var svgWidth            = svgRect.width;
+      var svgHeight           = svgRect.height;
+      var extraWidth          = containerWidth - svgWidth; // note how extraWidth and extraHeight differ
+      var extraHeight         = windowHeight - svgHeight;  // note how extraWidth and extraHeight differ
+
+      var currentOffsetTop    = svgRect.top;
+
+
+      // Tricky: muscore likes to send identical width images
+      // musecore does not like to send identical height images
+      //
+      // Here we change the padding for each new image. 
+      // CAUTION: If the server sends us different sizes of
+      // images this could cause possition suffling
+      // So far it appears musecore is pretty good at keeping
+      // widths of similar images identical
+      if (extraWidth > 0){
+        self.element.style.paddingLeft = extraWidth / 2 + 'px';
+      } else if (extraWidth <= 0){
+        self.element.style.paddingLeft = '0px';
+      }
+
+
+      if (containerHeight < windowHeight){
+        // CAUTION if there is a border, this might cause
+        // scroll bars that we don't really want
+        self.element.style.height = windowHeight;
+      }
+
+      if (extraHeight > 0 ){
+        var idealPaddingTop = extraHeight / 2;
+        // CAUTION: this assumes that the current offset and the padding top are the same
+        // This is likely, if of css reset is working, and we haven't otherwise changed document structure
+        var heightMismatch = (Math.abs(idealPaddingTop - currentOffsetTop));
+        console.log(heightMismatch)
+        if (heightMismatch > 40){
+          self.element.style.paddingTop = idealPaddingTop + 'px';
+        }
+
+      }
+
       newScore.opacity(1, 300);
+
     });
   }
 };

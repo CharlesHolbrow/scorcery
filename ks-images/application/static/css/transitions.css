@@ -6,9 +6,13 @@ body {
 h1 { font-size: 3rem; }
 
 #ks-container {
-  height: 400px;
+  /*height: 400px;*/  /* it appears this is not needed  - div grows when we add something*/
   position: relative;
   /*border: 1px solid blue;*/
+
+  /* padding-top and padding-left will be manipulated by js */
+  padding-top: 0px;
+  padding-left: 0px;
 }
 
 #ks-container div {
