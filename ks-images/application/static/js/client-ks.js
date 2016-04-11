@@ -118,6 +118,7 @@ KS.Stack.prototype = {
       var extraHeight         = windowHeight - svgHeight;  // note how extraWidth and extraHeight differ
 
       var currentOffsetTop    = svgRect.top;
+      var currentOffsetLeft   = svgRect.left;
 
 
       // Tricky: muscore likes to send identical width images
@@ -129,7 +130,11 @@ KS.Stack.prototype = {
       // So far it appears musecore is pretty good at keeping
       // widths of similar images identical
       if (extraWidth > 0){
-        self.element.style.paddingLeft = extraWidth / 2 + 'px';
+        var idealPaddingLeft = extraWidth / 2;
+        var leftMismatch = Math.abs(idealPaddingLeft - currentOffsetLeft);
+        if (leftMismatch > 40){
+          self.element.style.paddingLeft = idealPaddingLeft + 'px';
+        }
       } else if (extraWidth <= 0){
         self.element.style.paddingLeft = '0px';
       }
@@ -146,7 +151,6 @@ KS.Stack.prototype = {
         // CAUTION: this assumes that the current offset and the padding top are the same
         // This is likely, if of css reset is working, and we haven't otherwise changed document structure
         var heightMismatch = (Math.abs(idealPaddingTop - currentOffsetTop));
-        console.log(heightMismatch)
         if (heightMismatch > 40){
           self.element.style.paddingTop = idealPaddingTop + 'px';
         }
